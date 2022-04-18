@@ -9,12 +9,11 @@ https://docs.djangoproject.com/en/3.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/3.2/ref/settings/
 """
-
+import os.path
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
-
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
@@ -26,7 +25,6 @@ SECRET_KEY = 'django-insecure-vhvi!^o34dpb90b0ra5d^fnfpgxo7#iu%m-#a_=ct*3iql_7ly
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
 
 # Application definition
 
@@ -69,17 +67,19 @@ TEMPLATES = [
 
 WSGI_APPLICATION = 'luffyapi.wsgi.application'
 
-
 # Database
 # https://docs.djangoproject.com/en/3.2/ref/settings/#databases
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'luffy',
+        'HOST': "127.0.0.1",
+        'PORT': 3306,
+        'USER': 'luffy_user',
+        'PASSWORD': "luffy"
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/3.2/ref/settings/#auth-password-validators
@@ -99,7 +99,6 @@ AUTH_PASSWORD_VALIDATORS = [
     },
 ]
 
-
 # Internationalization
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
@@ -113,7 +112,6 @@ USE_L10N = True
 
 USE_TZ = True
 
-
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
@@ -123,3 +121,60 @@ STATIC_URL = '/static/'
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# 自定义的日志
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    # 日志格式
+    'formatters': {
+        'verbose': {
+            'format': '{levelname} {asctime} {module} {process:d} {thread:d} {message}',
+            'style': '{',
+        },
+        'simple': {
+            'format': '{levelname} {module} {lineno} {message}',
+            'style': '{',
+        },
+    },
+    # 日志的过滤信息
+    'filters': {
+        'require_debug_true': {
+            '()': 'django.utils.log.RequireDebugTrue',
+        },
+    },
+    'handlers': {
+        'console': {
+            'level': 'INFO',
+            'filters': ['require_debug_true'],
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple'
+        },
+        'file': {
+            # 日志等级
+            'level': 'INFO',
+            'class': 'logging.handlers.RotatingFileHandler',
+            # 日至文件位置
+            'filename': os.path.join(os.path.dirname(BASE_DIR), "logs/luffy.log"),
+            # 日志大小设置
+            'maxBytes': 300 * 1024 * 1024,
+            # 日志文件大小
+            'backupCount': 10,
+            # 日志格式详细信息
+            'formatter': 'verbose'
+        },
+    },
+    'loggers': {
+        'django': {
+            # 要将console和file 注册进去
+            'handlers': ['console', 'file'],
+            'propagate': True,  # 是否让日志信息继续冒泡给其他的日志系统
+        },
+
+    }
+}
+
+REST_FRAMEWORK = {
+    # 异常处理
+    'EXCEPTION_HANDLER': 'luffyapi.utils.exceptions.custom_exception_handler',
+}
