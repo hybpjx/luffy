@@ -19,15 +19,14 @@
             <span><router-link to="/" class="shop-cart-text">购物车</router-link></span>
           </div>
           <div class="login-box full-left">
+            <span>登录</span>
+            &nbsp;|&nbsp;
+            <span>注册</span>
           </div>
         </div>
 
-        <div class="login-box full-left">
-          <span>登录</span>
-          &nbsp;|&nbsp;
-          <span>注册</span>
-        </div>
       </div>
+
 
     </div>
   </div>
@@ -180,3 +179,4 @@ export default {
     font-size: 12px;
   }
 </style>
+

@@ -3,6 +3,7 @@ import App from './App.vue'
 import {router} from "@/router";
 import settings from "@/settings";
 
+
 // 导入 element-ui
 import elementPlus from 'element-plus';
 import 'element-plus/dist/index.css';
@@ -12,6 +13,10 @@ import "../static/css/reset.css";
 
 const app=createApp(App)
 
+
+import axios from "axios";
+axios.defaults.withCredentials=false // 阻止ajax 附带cookie
+
 app.config.productionTip=false
 
 
@@ -20,3 +25,4 @@ app.use(router)
 app.use(settings)
 app.mount('#app')
 app.use(elementPlus)
+app.use(axios)
