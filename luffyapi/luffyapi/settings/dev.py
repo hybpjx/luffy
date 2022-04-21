@@ -13,6 +13,7 @@ import os.path
 from pathlib import Path
 import rest_framework
 import corsheaders
+import simpleui
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -36,6 +37,7 @@ ALLOWED_HOSTS = [
 # Application definition
 
 INSTALLED_APPS = [
+    'simpleui',
     'rest_framework',
     'django.contrib.admin',
     'django.contrib.auth',
@@ -68,6 +70,16 @@ CORS_ORIGIN_WHITELIST = (
     'http://www.luffy.cn:8088',    #设置白名单 在部分 cors不带协议会导致不兼容
     # 'http://*.*.*:*',
 )
+
+
+
+# simpleui 配置
+
+SIMPLEUI_HOME_INFO = False
+SIMPLEUI_ANALYSIS = False
+# SIMPLEUI_HOME_PAGE = 'https://www.baidu.com'
+SIMPLEUI_HOME_TITLE = '路飞学城'
+SIMPLEUI_HOME_ICON = 'fa fa-user'
 
 ROOT_URLCONF = 'luffyapi.urls'
 
