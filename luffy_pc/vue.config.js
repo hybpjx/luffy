@@ -10,11 +10,22 @@ module.exports = {
     productionSourceMap: false,
     // 服务器端口号
     devServer: {
-        host:"0.0.0.0",
+        host:"http://www.luffy.cn",
         port: 8080,
        https: false,
       allowedHosts:[
-          "www.luffy.cn"
-      ]
+          "api.luffy.cn",
+          "www.luffy.cn",
+      ],
+             proxy:{
+            '/api':{
+                target: 'http://api.luffy.cn:8000/banner',
+                changeOrigin:true,
+                pathRewrite: {
+                    '^/api': ''
+                }
+            }
+        }
     },
 }
+

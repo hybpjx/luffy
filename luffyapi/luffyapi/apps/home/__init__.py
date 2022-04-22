@@ -1,0 +1,1 @@
+# default_app_config = "luffyapi.apps.home.apps.HomeConfig"

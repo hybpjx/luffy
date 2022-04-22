@@ -19,7 +19,8 @@ import simpleui
 BASE_DIR = Path(__file__).resolve().parent.parent
 # 把apps的目录引入设置为直接写在INSTALLED_APPS中
 import sys
-sys.path.insert(0,os.path.join(BASE_DIR,"apps"))
+
+sys.path.insert(0, os.path.join(BASE_DIR, "apps"))
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
@@ -55,7 +56,7 @@ MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'corsheaders.middleware.CorsMiddleware',
-    
+
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -63,15 +64,38 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
-#4、配置 django-cors-headers 中的参数
+# 4、配置 django-cors-headers 中的参数
 CORS_ALLOW_CREDENTIALS = True  # 允许携带cookie
-CORS_ORIGIN_ALLOW_ALL = True   # 允许所有源访问
+CORS_ORIGIN_ALLOW_ALL = True  # 允许所有源访问
 CORS_ORIGIN_WHITELIST = (
-    'http://www.luffy.cn:8088',    #设置白名单 在部分 cors不带协议会导致不兼容
+    'http://www.luffy.cn:8080',  # 设置白名单 在部分 cors不带协议会导致不兼容
+    'http://api.luffy.cn:8000',  # 设置白名单 在部分 cors不带协议会导致不兼容
     # 'http://*.*.*:*',
+    # '*'
+)
+CORS_ALLOW_METHODS = (
+    'DELETE',
+    'GET',
+    'OPTIONS',
+    'PATCH',
+    'POST',
+    'PUT',
+    'VIEW',
 )
 
-
+CORS_ALLOW_HEADERS = (
+    'XMLHttpRequest',
+    'X_FILENAME',
+    'accept-encoding',
+    'authorization',
+    'content-type',
+    'dnt',
+    'origin',
+    'user-agent',
+    'x-csrftoken',
+    'x-requested-with',
+    'Pragma',
+)
 
 # simpleui 配置
 
@@ -152,7 +176,6 @@ USE_TZ = True
 # 访问静态文件的url地质
 STATIC_URL = '/static/'
 
-
 STATICFILES_DIRS = [
     BASE_DIR / "static"
 ]
@@ -160,8 +183,6 @@ STATICFILES_DIRS = [
 MEDIA_ROOT = os.path.join(BASE_DIR, "uploads")
 # 访问上传文件的url地址前缀
 MEDIA_URL = "/media/"
-
-
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
