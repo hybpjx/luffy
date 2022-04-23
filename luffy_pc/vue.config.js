@@ -18,13 +18,27 @@ module.exports = {
           "www.luffy.cn",
       ],
              proxy:{
-            '/api':{
+            '/banner':{
                 target: 'http://api.luffy.cn:8000/banner',
                 changeOrigin:true,
                 pathRewrite: {
-                    '^/api': ''
+                    '^/banner': ''
                 }
-            }
+            },
+            '/header':{
+                target: 'http://api.luffy.cn:8000/nav/header',
+                changeOrigin:true,
+                pathRewrite: {
+                    '^/header': ''
+                }
+            },
+            '/footer':{
+                target: 'http://api.luffy.cn:8000/nav/footer',
+                changeOrigin:true,
+                pathRewrite: {
+                    '^/footer': ''
+                }
+            },
         }
     },
 }

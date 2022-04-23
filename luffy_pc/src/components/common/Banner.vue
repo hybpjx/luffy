@@ -28,7 +28,7 @@
           // 获取轮播广告列表
           get_banner_list(){
             // eslint-disable-next-line no-unused-vars
-            this.axios.get('api/',{}).then(response=>{
+            this.axios.get('banner/',{}).then(response=>{
               console.log(response.data)
               this.banner_list = response.data
               // eslint-disable-next-line no-unused-vars

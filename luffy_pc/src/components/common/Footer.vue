@@ -1,11 +1,12 @@
 <template>
   <div class="footer">
-    <ul>
-      <li>关于我们</li>
-      <li>荣誉资质</li>
-      <li>网站地图</li>
-      <li>联系我们</li>
-      <li>加入我们</li>
+
+    <ul >
+      <li v-for="(nav,key) in nav_list" :key="key">
+        <span v-if="nav.is_site"><a :href="nav.link">{{ nav.title }}</a></span>
+        <span v-else><router-link :to="nav.link">{{ nav.title }}</router-link></span>
+      </li>
+
     </ul>
     <p>Copyright © luffycity.com版权所有 | 京ICP备17072161号-1</p>
   </div>
@@ -16,11 +17,23 @@ export default {
   // eslint-disable-next-line vue/multi-word-component-names
   name: "Footer",
   data() {
-    return {}
+    return {
+        nav_list:[]
+    }
   },
   created() {
+    this.get_nav_list()
   },
-  methods: {}
+  methods: {
+    get_nav_list() {
+      this.axios.get("/footer", {}).then(response => {
+        this.nav_list = response.data
+        console.log(response.data)
+      }).catch(error => {
+        console.log(error.response)
+      })
+    }
+  }
 }
 </script>
 
