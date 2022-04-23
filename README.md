@@ -93,10 +93,10 @@ https://www.axure.com.cn/resource
 3. 注册容联云短信接口平台的账号
 4. 注册保利威视频服务平台的账号
 
-`
+```
 pip install django
 pip install djangorestframework
 pip install Pymysql
 pip install Pillow
 pip install django-redis
-`
+```
