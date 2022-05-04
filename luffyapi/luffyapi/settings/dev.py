@@ -50,6 +50,7 @@ INSTALLED_APPS = [
 
     # 子应用
     'home',
+    'user',
 ]
 
 MIDDLEWARE = [
@@ -135,7 +136,7 @@ DATABASES = {
         'HOST': "127.0.0.1",
         'PORT': 3306,
         'USER': 'luffy_user',
-        'PASSWORD': "luffy"
+        'PASSWORD': "luffy",
     }
 }
 
@@ -241,7 +242,31 @@ LOGGING = {
     }
 }
 
+
 REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'luffyapi.utils.exceptions.custom_exception_handler',
+    # 登陆验证
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_jwt.authentication.JSONWebTokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',
+        'rest_framework.authentication.BasicAuthentication',
+    ),
 }
+
+import datetime
+
+JWT_AUTH = {
+    # 设置jwt 有效期
+    "JWT_EXPIRATION_DELTA": datetime.timedelta(days=1),
+    # 设置返回数据的格式
+    "JWT_RESPONSE_PAYLOAD_HANDLER":"user.utils.jwt_response_payload_handler",
+}
+
+# 实现多条件登陆判断
+AUTHENTICATION_BACKENDS=[
+    "user.utils.UsernameMobileAuthBackend",
+]
+
+# 自定义用户模型类
+AUTH_USER_MODEL = "user.User"

@@ -1,6 +1,7 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
-  transpileDependencies: true
+  transpileDependencies: true,
+     lintOnSave: false
 })
 
 module.exports = {
@@ -17,29 +18,37 @@ module.exports = {
           "api.luffy.cn",
           "www.luffy.cn",
       ],
-             proxy:{
-            '/banner':{
-                target: 'http://api.luffy.cn:8000/banner',
-                changeOrigin:true,
-                pathRewrite: {
-                    '^/banner': ''
-                }
-            },
-            '/header':{
-                target: 'http://api.luffy.cn:8000/nav/header',
-                changeOrigin:true,
-                pathRewrite: {
-                    '^/header': ''
-                }
-            },
-            '/footer':{
-                target: 'http://api.luffy.cn:8000/nav/footer',
-                changeOrigin:true,
-                pathRewrite: {
-                    '^/footer': ''
-                }
-            },
-        }
+             proxy: {
+                 '/basic': {
+                     target: 'http://api.luffy.cn:8000',
+                     changeOrigin: true,
+                     pathRewrite: {
+                         '^/basic': ''
+                     }
+                 },
+             }
+        //     '/banner':{
+        //         target: 'http://api.luffy.cn:8000/banner',
+        //         changeOrigin:true,
+        //         pathRewrite: {
+        //             '^/banner': ''
+        //         }
+        //     },
+        //     '/header':{
+        //         target: 'http://api.luffy.cn:8000/nav/header',
+        //         changeOrigin:true,
+        //         pathRewrite: {
+        //             '^/header': ''
+        //         }
+        //     },
+        //     '/footer':{
+        //         target: 'http://api.luffy.cn:8000/nav/footer',
+        //         changeOrigin:true,
+        //         pathRewrite: {
+        //             '^/footer': ''
+        //         }
+        //     },
+        // }
     },
 }
 

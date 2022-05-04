@@ -26,7 +26,7 @@ export default {
   },
   methods: {
     get_nav_list() {
-      this.axios.get("/footer", {}).then(response => {
+      this.axios.get("/basic/nav/footer", {}).then(response => {
         this.nav_list = response.data
         console.log(response.data)
       }).catch(error => {
