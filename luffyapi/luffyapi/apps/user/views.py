@@ -5,7 +5,7 @@ import json
 from rest_framework.response import Response
 from rest_framework import status as http_status
 from rest_framework.views import APIView
-from luffyapi.apps.user.utils import get_user_by_account
+from .utils import get_user_by_account
 from luffyapi.libs.geetest import GeetestLib
 
 captcha_id = "b46d1900d0a894591916ea94ea91bd2c"
@@ -13,7 +13,7 @@ private_key = "36fc3fe98530eea08dfc6ce76e3d24c4"
 
 
 
-class CaptchaAPI(APIView):
+class CaptchaAPIView(APIView):
     """
     验证码视图类
     """
@@ -25,7 +25,8 @@ class CaptchaAPI(APIView):
     def get(self,request):
         """获取验证码的功能"""
         # 先拿到前端请求的username
-        username = request.data.username
+        # username = request.data.username
+        username = request.query_params.get("username")
         # 再通过请求的username 拿到用户 最终拿到ID
         user=get_user_by_account(username)
         if user is None:

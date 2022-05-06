@@ -1,10 +1,11 @@
 const { defineConfig } = require('@vue/cli-service')
 module.exports = defineConfig({
   transpileDependencies: true,
-     lintOnSave: false
+     lintOnSave: false,
 })
 
 module.exports = {
+    lintOnSave: false,
     // 基本路径
     // baseUrl: './',
     // 生产环境是否生成 sourceMap 文件
@@ -27,28 +28,6 @@ module.exports = {
                      }
                  },
              }
-        //     '/banner':{
-        //         target: 'http://api.luffy.cn:8000/banner',
-        //         changeOrigin:true,
-        //         pathRewrite: {
-        //             '^/banner': ''
-        //         }
-        //     },
-        //     '/header':{
-        //         target: 'http://api.luffy.cn:8000/nav/header',
-        //         changeOrigin:true,
-        //         pathRewrite: {
-        //             '^/header': ''
-        //         }
-        //     },
-        //     '/footer':{
-        //         target: 'http://api.luffy.cn:8000/nav/footer',
-        //         changeOrigin:true,
-        //         pathRewrite: {
-        //             '^/footer': ''
-        //         }
-        //     },
-        // }
     },
 }
 

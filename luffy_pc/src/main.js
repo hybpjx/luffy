@@ -2,6 +2,9 @@ import { createApp } from 'vue'
 import App from './App.vue'
 import {router} from "@/router";
 
+// // 导入gt极验
+import "../static/js/gt.js";
+
 // 导入 element-ui
 import elementPlus from 'element-plus';
 import 'element-plus/dist/index.css';

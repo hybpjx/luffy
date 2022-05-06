@@ -23,7 +23,7 @@
             </p>
             <p>忘记密码</p>
           </div>
-          <button class="login_btn" @click="loginHandler">登录</button>
+          <button class="login_btn" @click="get_geetest_captcha">登录</button>
           <p class="go_login">没有账号
             <router-link to="/register">立即注册</router-link>
           </p>
@@ -95,9 +95,54 @@ export default {
         this.$message.error("用户名或密码错误")
         console.log(error.response)
       })
-    }
-  }
+    },
 
+    // 向后端发送极验验证码
+    get_geetest_captcha() {
+      // 获取极验验证码
+      this.axios.get('/basic/user/captcha/', {
+        params: {
+          'username': this.username
+        }
+      },).then(response => {
+        // 使用initGeetest接口
+        // 参数1：配置参数
+        // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+        let data = JSON.parse(response.data);
+        initGeetest({
+          gt: data.gt,
+          challenge: data.challenge,
+          product: "popup",// 产品形式, 包括:float, embed, popup, 只对pc版验证码有效
+          offline: !data.success// 表示用户后台检测极验服务器是否宕机, 一般无需关注
+        }, this.handlerPopup);
+
+      }).catch(error => {
+        console.log(error.response)
+      })
+    },
+
+    // 极验验证码的验证
+    handlerPopup(captchaObj) {
+            let self = this;
+
+            captchaObj.onsuccess(function () {
+              var validate = captchaObj.getValidate();
+              // 当用户 点击验证码正确后执行操作
+              self.axios()
+
+
+            })
+
+
+
+
+        // 弹出式需要绑定触发验证码弹出按钮
+        captchaObj.bindOn("#popup-submit");
+        // 将验证码加到id为captcha的元素里
+        captchaObj.appendTo("#geetest1");
+        // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
+    };
+  }
 };
 </script>
 
