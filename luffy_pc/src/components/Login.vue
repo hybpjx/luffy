@@ -25,7 +25,7 @@
           </div>
           <button class="login_btn" @click="get_geetest_captcha">登录</button>
           <p class="go_login">没有账号
-            <router-link to="/register">立即注册</router-link>
+            <router-link to="/user/register">立即注册</router-link>
           </p>
         </div>
         <div class="inp" v-show="login_type==1">
@@ -34,7 +34,7 @@
           <button id="get_code">获取验证码</button>
           <button class="login_btn" @click="loginHandler">登录</button>
           <p class="go_login">没有账号
-            <router-link to="/register">立即注册</router-link>
+            <router-link to="/user/register">立即注册</router-link>
           </p>
         </div>
       </div>
@@ -122,26 +122,35 @@ export default {
     },
 
     // 极验验证码的验证
-    handlerPopup(captchaObj) {
-            let self = this;
+    handlerPopup( captchaObj) {
+      let self = this;
 
-            captchaObj.onsuccess(function () {
-              var validate = captchaObj.getValidate();
-              // 当用户 点击验证码正确后执行操作
-              self.axios()
+      captchaObj.onsuccess(function () {
+        let validate = captchaObj.getValidate();
+        // 当用户 点击验证码正确后执行操作
+        self.axios.post("/basic/user/captcha/", {
+          // 二次验证所需的三个值
+          geetest_challenge: validate.geetest_challenge,
+          geetest_validate: validate.geetest_validate,
+          geetest_seccode: validate.geetest_seccode
+        }).then(res=>{
+          if (res.data.status){
+            // 验证码通过后,才发送账号与密码进行登陆
+            self.loginHandler();
+          }
+        }).catch(error=>{
+          self.$message.error(error.response)
+        })
 
 
-            })
+      })
 
-
-
-
-        // 弹出式需要绑定触发验证码弹出按钮
-        captchaObj.bindOn("#popup-submit");
-        // 将验证码加到id为captcha的元素里
-        captchaObj.appendTo("#geetest1");
-        // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
-    };
+      // 优化验证码
+      document.getElementById("#geetest1").innerHTML="";
+      // 将验证码加到id为captcha的元素里
+      captchaObj.appendTo("#geetest1");
+      // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
+    }
   }
 };
 </script>

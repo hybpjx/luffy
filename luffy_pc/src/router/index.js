@@ -2,6 +2,7 @@ import {createRouter, createWebHistory} from "vue-router";
 // 要导入 component 的内容 然后注册到路由中
 import Home from "@/components/Home";
 import Login from "@/components/Login";
+import Register from "@/components/Register";
 
 const routes=[
     {
@@ -18,6 +19,11 @@ const routes=[
         path:'/user/login',
         name:"Login",
         component:Login
+    },
+    {
+        path:'/user/register',
+        name:"Register",
+        component:Register
     },
 ]
 
