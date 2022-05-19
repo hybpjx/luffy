@@ -9,7 +9,7 @@
           <input v-model="password" type="password" placeholder="登录密码" class="user">
           <div class="sms-box">
             <input v-model="sms_code" maxlength="6" type="text" placeholder="短信验证码" class="user">
-            <div class="sms-btn"></div>
+            <div class="sms-btn" @click="smsHandler">点击发送短信</div>
           </div>
           <div id="geetest"></div>
           <button class="register_btn" @click="registerHandle">注册</button>
@@ -30,17 +30,27 @@ export default {
       mobile: "",
       password: "",
       sms_code: "",
+      //  判断 是否发送过短信
+      is_send_sms: false
     }
   },
   created() {
   },
   methods: {
 
-    checkMobile(){
-      // 校验手机号的方法
-      this.axios.get(`basic/user/mobile/${this.mobile}`).catch(error=>{
+    checkMobile() {
+
+      if (this.mobile) {
+
+      // 检查手机号的合法性[格式和是否已经注册]
+      this.axios.get(`/basic/user/mobile/${this.mobile}`).then().catch(error => {
         this.$message.error(error.response.data.message);
       })
+
+      } else {
+        this.$message.error("请输入手机号")
+      }
+
 
     },
     registerHandle() {
@@ -68,29 +78,70 @@ export default {
 
       }).catch(error => {
         let error_res = error.response.data;
-        let error_message="";
-        for (let key in error_res){
+        let error_message = "";
+        for (let key in error_res) {
           error_message = error_res[key][0]
         }
         this.$message.error(`对不起,注册失败! ${error_message}`);
-/*
-        let error_res = error.response.data;
+        /*
+                let error_res = error.response.data;
 
-        if (error_res.non_field_errors){
-          let error_message = error_res.non_field_errors[0]
-           this.$message.error(`对不起,注册失败! ${error_message}`);
-        }
-        if (error_res.password){
-          let error_message = error_res.password[0]
-           this.$message.error(`对不起,注册失败! ${error_message}`);
-        }
-        if (error_res.sms_code){
-          let error_message = error_res.sms_code[0]
-           this.$message.error(`对不起,注册失败! ${error_message}`);
-        }
-*/
+                if (error_res.non_field_errors){
+                  let error_message = error_res.non_field_errors[0]
+                   this.$message.error(`对不起,注册失败! ${error_message}`);
+                }
+                if (error_res.password){
+                  let error_message = error_res.password[0]
+                   this.$message.error(`对不起,注册失败! ${error_message}`);
+                }
+                if (error_res.sms_code){
+                  let error_message = error_res.sms_code[0]
+                   this.$message.error(`对不起,注册失败! ${error_message}`);
+                }
+        */
       })
     },
+
+    smsHandler() {
+      // 发送短信
+
+      //1. 检查手机格式
+      if (!/1[3-9]\d{9}/.test(this.mobile)) {
+        this.message.error("手机号码格式错误");
+        return false;
+      }
+
+      //2. 判断短信间隔事件
+      if (this.is_send_sms) {
+        this.message.error("当前手机以及在60秒接收过短信,请勿重复发送");
+        return false;
+      }
+
+      // 如果没有短信间隔 就发送ajax
+      this.axios.get(`/basic/user/mobile/${this.mobile}`).then(res => {
+        console.log(res.data)
+
+        let interval_time = 60;
+
+        // 此时发送短信成功  这个标识符标记为true
+        this.is_send_sms = true;
+
+        let timer = setInterval(() => {
+          if (interval_time <= 1) {
+            // 停止倒计时
+            // 清除计时器
+            clearInterval(timer);
+            // 当时间过去 重新标志为 false
+            this.is_send_sms = false;
+          } else {
+            interval_time--;
+
+          }
+        }, 1000)
+      }).catch(error => {
+        console.log(error.data.response)
+      })
+    }
 
 
   },

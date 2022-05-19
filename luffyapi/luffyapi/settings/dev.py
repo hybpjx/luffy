@@ -242,7 +242,6 @@ LOGGING = {
     }
 }
 
-
 REST_FRAMEWORK = {
     # 异常处理
     'EXCEPTION_HANDLER': 'luffyapi.utils.exceptions.custom_exception_handler',
@@ -260,13 +259,66 @@ JWT_AUTH = {
     # 设置jwt 有效期
     "JWT_EXPIRATION_DELTA": datetime.timedelta(days=1),
     # 设置返回数据的格式
-    "JWT_RESPONSE_PAYLOAD_HANDLER":"user.utils.jwt_response_payload_handler",
+    "JWT_RESPONSE_PAYLOAD_HANDLER": "user.utils.jwt_response_payload_handler",
 }
 
 # 实现多条件登陆判断
-AUTHENTICATION_BACKENDS=[
+AUTHENTICATION_BACKENDS = [
     "user.utils.UsernameMobileAuthBackend",
 ]
 
 # 自定义用户模型类
 AUTH_USER_MODEL = "user.User"
+
+# redis配置
+CACHES = {
+    "default": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/0",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+            "CONNECTION_POOL_KWARGS": {"max_connections": 100}
+            # "PASSWORD": "密码",
+        }
+    },
+
+    # 提供给 Django admin的缓存
+    "session": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/1",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+
+    # 提供存储短信验证码
+    "sms_code": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/2",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
+}
+# 设置admin 登陆时,把session 丢到 redis中
+SESSION_ENGINE = "django.contrib.sessions.backends.cache"
+SESSION_CACHE_ALIAS= "session"
+
+
+# 短信的接口配置
+SMS = {
+    # 说明：主账号，登陆云通讯网站后，可在"控制台-应用"中看到开发者主账号ACCOUNT SID
+    "_accountSid": '8aaf0708809721d00180a2bfbd2c023d',
+    # 说明：主账号Token，登陆云通讯网站后，可在控制台-应用中看到开发者主账号AUTH TOKEN
+    "_accountToken": '8cc08a0b6750491899ec96cae3ae8273',
+    # 6dd01b2b60104b3dbc88b2b74158bac6
+    # 请使用管理控制台首页的APPID或自己创建应用的APPID
+    "_appId": '8aaf0708809721d00180a2bfbe320243',
+    # 8a216da863f8e6c20164139688400c21
+    # 说明：请求地址，生产环境配置成app.cloopen.com
+    "_serverIP": 'sandboxapp.cloopen.com',
+    # 说明：请求端口 ，生产环境为8883
+    "_serverPort": "8883",
+    # 说明：REST API版本号保持不变
+    "_softVersion": '2013-12-26',
+}
