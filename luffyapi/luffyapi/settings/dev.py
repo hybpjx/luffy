@@ -302,8 +302,7 @@ CACHES = {
 }
 # 设置admin 登陆时,把session 丢到 redis中
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
-SESSION_CACHE_ALIAS= "session"
-
+SESSION_CACHE_ALIAS = "session"
 
 # 短信的接口配置
 SMS = {

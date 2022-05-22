@@ -9,7 +9,7 @@
           <input v-model="password" type="password" placeholder="登录密码" class="user">
           <div class="sms-box">
             <input v-model="sms_code" maxlength="6" type="text" placeholder="短信验证码" class="user">
-            <div class="sms-btn" @click="smsHandler">点击发送短信</div>
+            <div class="sms-btn" @click="smsHandler">{{this.sms_text}}</div>
           </div>
           <div id="geetest"></div>
           <button class="register_btn" @click="registerHandle">注册</button>
@@ -24,6 +24,7 @@
 
 <script>
 export default {
+  // eslint-disable-next-line vue/multi-word-component-names
   name: 'Register',
   data() {
     return {
@@ -31,7 +32,8 @@ export default {
       password: "",
       sms_code: "",
       //  判断 是否发送过短信
-      is_send_sms: false
+      is_send_sms: false,
+      sms_text:"点击发送短信"
     }
   },
   created() {
@@ -113,12 +115,12 @@ export default {
 
       //2. 判断短信间隔事件
       if (this.is_send_sms) {
-        this.message.error("当前手机以及在60秒接收过短信,请勿重复发送");
+        this.$message.error("当前手机以及在60秒接收过短信,请勿重复发送");
         return false;
       }
 
       // 如果没有短信间隔 就发送ajax
-      this.axios.get(`/basic/user/mobile/${this.mobile}`).then(res => {
+      this.axios.get(`/basic/user/sms/${this.mobile}`).then(res => {
         console.log(res.data)
 
         let interval_time = 60;
@@ -133,12 +135,15 @@ export default {
             clearInterval(timer);
             // 当时间过去 重新标志为 false
             this.is_send_sms = false;
+            this.sms_text="点击发送短信";
           } else {
             interval_time--;
+            this.sms_text=`${interval_time}秒后重新发送短信`;
 
           }
         }, 1000)
       }).catch(error => {
+        console.log(error.data)
         console.log(error.data.response)
       })
     }

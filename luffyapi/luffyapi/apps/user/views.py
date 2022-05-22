@@ -15,6 +15,7 @@ from luffyapi.settings import constant
 captcha_id = "5033a47b10bb9628efd44289e49636aa"
 private_key = "b91e188f42ce8c0c57ed21f8754c22cf"
 
+
 class CaptchaAPIView(APIView):
     """
     验证码视图类
@@ -67,7 +68,7 @@ class ModelAPIView(APIView):
     def get(self, request, mobile):
         # # 验证手机号码的格式 !! 已经在url声明过了
         if not re.match(r"^1[3-9]\d{9}$", mobile):
-            return Response({"message": "对不起,手机号码 格式错误"},status=http_status.HTTP_400_BAD_REQUEST)
+            return Response({"message": "对不起,手机号码 格式错误"}, status=http_status.HTTP_400_BAD_REQUEST)
         # 验证 手机号是否被注册过
         if get_user_by_account(mobile):
             return Response({"message": "对不起,手机号码已经被注册了"}, status=http_status.HTTP_400_BAD_REQUEST)
@@ -81,32 +82,32 @@ class SMSAPIView(APIView):
         """短信发送接口"""
 
         # 1. 判断短信 60秒内是否发送
-        redis_conn=get_redis_connection("sms_code")
-
-        ret= redis_conn.get(f"mobile_{mobile}")
-
+        redis_conn = get_redis_connection("sms_code")
+        ret = redis_conn.get(f"mobile_{mobile}")
         if ret:
             return Response({"message": "对不起 请勿频繁发送短信 请60秒后重试"}, status=http_status.HTTP_400_BAD_REQUEST)
-
 
         # 2. 生成短信验证码
         sms_code = "%06d" % random.randint(1, 999999)  # 生成六位数字
 
         # 3. 保存短信验证码到redis中
-        redis_conn=get_redis_connection("sms_code")
+        redis_conn = get_redis_connection("sms_code")
         # 保留验证码到 redis库中
-        redis_conn.setex(f"sms_{mobile}",constant.SMS_EXPIRE_TIME,sms_code)
+        redis_conn.setex(f"sms_{mobile}", constant.SMS_EXPIRE_TIME, sms_code)
 
-        redis_conn.setex(f"mobile_{mobile}",constant.SMS_INTERVAL_TIME,"-")
+        redis_conn.setex(f"mobile_{mobile}", constant.SMS_INTERVAL_TIME, "-")
 
-        # 4. 调用短信sdk 发送短信
-        ret=send_message(mobile,(sms_code,constant.SMS_INTERVAL_TIME//60),constant.SMS_TEMPLATE_ID)
+        try:
+            # 4. 调用短信sdk 发送短信
+            ret = send_message(mobile, (sms_code, constant.SMS_INTERVAL_TIME // 60), constant.SMS_TEMPLATE_ID)
+            ret = eval(ret)
+            # 5. 短信发送成功返回的结果
+            if ret.get("statusCode") == "000000":
+                # 发送短信成功
+                return Response({"message": "发送短信成功"}, status=http_status.HTTP_200_OK)
+            else:
+                return Response({"message": "发送短信失败"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
-        # 5. 短信发送成功返回的结果
-        if ret['statusCode']=="000000":
-            # 发送短信成功
-            return Response({"message":"发送短信成功"},status=http_status.HTTP_200_OK)
-        else:
-            return Response({"message":"发送短信失败"},status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+        except:
+            return Response({"message": "发送短信失败"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
