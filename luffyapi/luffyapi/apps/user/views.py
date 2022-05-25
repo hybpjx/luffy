@@ -90,14 +90,23 @@ class SMSAPIView(APIView):
         # 2. 生成短信验证码
         sms_code = "%06d" % random.randint(1, 999999)  # 生成六位数字
 
-        # 3. 保存短信验证码到redis中
-        redis_conn = get_redis_connection("sms_code")
-        # 保留验证码到 redis库中
-        redis_conn.setex(f"sms_{mobile}", constant.SMS_EXPIRE_TIME, sms_code)
-
-        redis_conn.setex(f"mobile_{mobile}", constant.SMS_INTERVAL_TIME, "-")
+        # 3. 保存短信验证码到redis中[使用事务把多条指令集中发送给redis数据库]
+        # 创建一个管道对象
+        pipe=redis_conn.pipeline()
+        # 开启事务[无法管理数据库的数据读取操作]
+        pipe.multi()
+        # 把事务中要完成的所有操作，写入管道中
+        pipe.setex(f"sms_{mobile}", constant.SMS_EXPIRE_TIME, sms_code)
+        pipe.setex(f"mobile_{mobile}", constant.SMS_INTERVAL_TIME, "-")
+        # 执行事务
+        pipe.execute()
 
         try:
+            from Celery_tasks.sms.tasks import send_sms
+
+            send_sms.delay()
+
+
             # 4. 调用短信sdk 发送短信
             ret = send_message(mobile, (sms_code, constant.SMS_INTERVAL_TIME // 60), constant.SMS_TEMPLATE_ID)
             ret = eval(ret)
