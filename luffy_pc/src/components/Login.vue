@@ -21,7 +21,7 @@
 
               <span>记住密码</span>
             </p>
-            <p>忘记密码</p>
+            <router-link to="/user/forget">忘记密码</router-link>
           </div>
           <button class="login_btn" @click="get_geetest_captcha">登录</button>
           <p class="go_login">没有账号
@@ -109,6 +109,7 @@ export default {
         // 参数1：配置参数
         // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
         let data = JSON.parse(response.data);
+        // eslint-disable-next-line no-undef
         initGeetest({
           gt: data.gt,
           challenge: data.challenge,

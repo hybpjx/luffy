@@ -299,6 +299,14 @@ CACHES = {
             "CLIENT_CLASS": "django_redis.client.DefaultClient",
         }
     },
+    # 提供忘记密码的邮箱验证码
+    "mail_code": {
+        "BACKEND": "django_redis.cache.RedisCache",
+        "LOCATION": "redis://127.0.0.1:6379/5",
+        "OPTIONS": {
+            "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        }
+    },
 }
 # 设置admin 登陆时,把session 丢到 redis中
 SESSION_ENGINE = "django.contrib.sessions.backends.cache"
@@ -321,3 +329,16 @@ SMS = {
     # 说明：REST API版本号保持不变
     "_softVersion": '2013-12-26',
 }
+
+# 发送邮件配置 # 固定写法设置Email引擎
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# smpt服务地址
+EMAIL_HOST = 'smtp.163.com'
+EMAIL_PORT = 25
+# 发送邮件的邮箱  # ZDJTKDEFODMIXSQD
+EMAIL_HOST_USER = 'hybpjx@163.com'
+# 在邮箱中设置的客户端授权密码
+EMAIL_HOST_PASSWORD = 'XDXXQCOFVKZSIQQQ'
+# 收件人看到的发件人
+EMAIL_FROM = 'zicTTLuffy学城<hybpjx@163.com>'
+EMAIL_USE_TLS = False #与SMTP服务器通信时,是否启用安全模式

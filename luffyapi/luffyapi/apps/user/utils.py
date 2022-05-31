@@ -33,7 +33,7 @@ def get_user_by_account(account):
         #     user = User.objects.get(username=account)
 
         # 上面方法 是用if else判断 也可以用Q对象判断
-        user = User.objects.filter(Q(username=account) | Q(mobile=account)).first()
+        user = User.objects.filter(Q(username=account) | Q(mobile=account) | Q(email=account)).first()
 
     except User.DoesNotExist:
         return None

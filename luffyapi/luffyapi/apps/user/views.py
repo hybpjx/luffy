@@ -1,4 +1,7 @@
 import random
+
+from django.contrib import auth
+from django.contrib.auth.hashers import make_password
 from rest_framework.generics import CreateAPIView
 from rest_framework.response import Response
 from rest_framework import status as http_status
@@ -9,7 +12,7 @@ from .models import User
 from .utils import get_user_by_account
 from luffyapi.libs.geetest import GeetestLib
 from .serializers import UserModelSerializers
-from luffyapi.libs.yuntongxun.update_sms import send_message
+
 from luffyapi.settings import constant
 
 captcha_id = "5033a47b10bb9628efd44289e49636aa"
@@ -104,19 +107,59 @@ class SMSAPIView(APIView):
         try:
             from Celery_tasks.sms.tasks import send_sms
 
-            send_sms.delay()
+            send_sms.delay(mobile,sms_code)
 
-
-            # 4. 调用短信sdk 发送短信
-            ret = send_message(mobile, (sms_code, constant.SMS_INTERVAL_TIME // 60), constant.SMS_TEMPLATE_ID)
-            ret = eval(ret)
-            # 5. 短信发送成功返回的结果
-            if ret.get("statusCode") == "000000":
-                # 发送短信成功
-                return Response({"message": "发送短信成功"}, status=http_status.HTTP_200_OK)
-            else:
-                return Response({"message": "发送短信失败"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
-
+            return Response({"message": "发送短信成功"})
         except:
             return Response({"message": "发送短信失败"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
 
+
+
+class ForgetAPIView(APIView):
+    def get(self, request, email):
+        """邮件发送"""
+
+        # 验证 手机号是否被注册过
+        if not get_user_by_account(email):
+            return Response({"message": "对不起,邮箱尚未注册，请先注册"}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        # 1. 判断短信 60秒内是否发送
+        redis_conn = get_redis_connection("mail_code")
+        ret = redis_conn.get(f"email_{email}")
+        if ret:
+            return Response({"message": "对不起 请勿频繁发送邮件 请60秒后重试"}, status=http_status.HTTP_400_BAD_REQUEST)
+
+        # 2. 生成密码
+        now_password = "%06d" % random.randint(1, 999999)  # 生成六位数字
+
+        # 3. 保存短信验证码到redis中[使用事务把多条指令集中发送给redis数据库]
+        # 创建一个管道对象
+        pipe = redis_conn.pipeline()
+        # 开启事务[无法管理数据库的数据读取操作]
+        pipe.multi()
+        # 把事务中要完成的所有操作，写入管道中
+        pipe.setex(f"password_{email}", constant.SMS_EXPIRE_TIME, now_password)
+        pipe.setex(f"mail_{email}", constant.SMS_INTERVAL_TIME, "-")
+        # 执行事务
+        pipe.execute()
+
+        try:
+            from Celery_tasks.mail.tasks import send_email
+
+            send_email.delay(email,now_password)
+            try:
+                user = User.objects.get(email=email)
+                user.password = make_password(now_password)
+
+                if user:
+                    user.save()
+                    return Response({"message": "请查看邮箱"})
+
+                else:
+                    return Response({"message": "修改密码失败 可能是用户不存在"},status=http_status.HTTP_400_BAD_REQUEST)
+            except User.DoesNotExist:
+                return Response({"message": "用户不存在"},status=http_status.HTTP_404_NOT_FOUND)
+
+
+        except:
+            return Response({"message": "发送邮件失败"}, status=http_status.HTTP_500_INTERNAL_SERVER_ERROR)
