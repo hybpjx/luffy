@@ -23,7 +23,8 @@
             </p>
             <router-link to="/user/forget">忘记密码</router-link>
           </div>
-          <button class="login_btn" @click="get_geetest_captcha">登录</button>
+<!--          <button class="login_btn" @click="get_geetest_captcha">登录</button>-->
+          <button class="login_btn" @click="loginHandler">登录</button>
           <p class="go_login">没有账号
             <router-link to="/user/register">立即注册</router-link>
           </p>
@@ -96,6 +97,11 @@ export default {
         console.log(error.response)
       })
     },
+
+
+    // get_geetest_captcha(){
+    //   console.log("hello")
+    // },
 
     // 向后端发送极验验证码
     get_geetest_captcha() {

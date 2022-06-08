@@ -4,6 +4,7 @@ import Home from "@/components/Home";
 import Login from "@/components/Login";
 import Register from "@/components/Register";
 import Forget from "@/components/Forget";
+import Course from "@/components/Course";
 
 const routes=[
     {
@@ -30,6 +31,11 @@ const routes=[
         path:'/user/forget',
         name:"Forget",
         component:Forget
+    },
+    {
+        path:'/course',
+        name:"Course",
+        component:Course
     },
 ]
 
